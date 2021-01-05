@@ -23,6 +23,12 @@ export class ContainerDI<InterfacesT extends { [x: string]: any }> {
 
     _creatingNow: any;
 
+    _singletones: {
+        [n in keyof InterfacesT]?: {
+            [tagName: string]: InterfacesT[n]
+        }
+    } = {};
+
     private _register<NameT extends keyof InterfacesT>(
         name: NameT,
         params: RegisteredCtor<InterfacesT[NameT]>,
@@ -81,6 +87,19 @@ export class ContainerDI<InterfacesT extends { [x: string]: any }> {
         if (x.ctor) obj = new x.ctor();
         if (x.factory) obj = x.factory(ctx);
         this._creatingNow = undefined;
+        return obj;
+    }
+
+    singletone<NameT extends keyof InterfacesT>(name: NameT, tag?: string, ctx: any = {}): InterfacesT[NameT] {
+        tag = tag || '';
+
+        if (this._singletones[name] && this._singletones[name]![tag]) {
+            return this._singletones[name]![tag];
+        }
+
+        if (!this._singletones[name]) this._singletones[name] = {};
+
+        const obj = (this._singletones as any)[name][tag] = this.create(name, tag, ctx);
         return obj;
     }
 }

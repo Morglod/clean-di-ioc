@@ -83,3 +83,32 @@ const warrior = di.create('warrior');
 
 console.log(warrior.sneak(), warrior.fight());
 ```
+
+## Singletone
+
+```ts
+// declare
+interface ILogger {
+    log(msg: string): void;
+}
+
+const di = new ContainerDI<{
+    logger: ILogger,
+}>();
+
+// bind implementation
+class Logger implements ILogger {
+    log(msg: string): void {
+        console.log(msg);
+    }
+}
+di.set('logger', () => new Logger);
+
+// use it as singletone
+
+const logger = di.singletone('logger');
+logger.log('hello');
+
+const logger = di.singletone('logger');
+logger.log('world');
+```
