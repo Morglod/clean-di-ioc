@@ -112,3 +112,77 @@ logger.log('hello');
 const logger = di.singletone('logger');
 logger.log('world');
 ```
+
+# OOP version
+
+`@morglod/di-ioc/lib/oop`
+
+* Decorators
+* Everything is typed
+* Context supported
+* Tags supported
+
+## Example
+
+Define interfaces
+
+```ts
+export interface Weapon {
+    hit(): string;
+}
+
+export const Weapon = diBase<Weapon>();
+```
+
+Implementation
+
+```ts
+@diImpl(Weapon)
+export class Katana {
+    hit() {
+        return 'cut!';
+    }
+}
+```
+
+Main
+
+```ts
+const weapon = diPick(Weapon);
+weapon.hit() === 'cut!';
+```
+
+## Example with tags
+
+Implementation
+
+```ts
+@diImpl(Weapon)
+export class Katana {
+    hit() {
+        return 'cut!';
+    }
+}
+
+@diImpl(Weapon, 'mock')
+export class FakeKatana {
+    hit() {
+        return 'fake cut!';
+    }
+}
+```
+
+Main
+
+```ts
+// Pick mock version
+const fakeWeapon = diPick(Weapon, 'mock');
+
+// Set fallback tag when no tag specified
+diSetDefaultTag(Weapon, 'mock');
+const fakeWeapon = diPick(Weapon);
+
+// Everytime use tag=mock, even if other tag specified
+diSetForceTag(Weapon, 'mock');
+const fakeWeapon = diPick(Weapon, 'anyTag');
+```

@@ -91,7 +91,7 @@ export class ContainerDI<InterfacesT extends { [x: string]: any }> {
     }
 
     singletone<NameT extends keyof InterfacesT>(name: NameT, tag?: string, ctx: any = {}): InterfacesT[NameT] {
-        tag = tag || '';
+        tag = tag || 'default';
 
         if (this._singletones[name] && this._singletones[name]![tag]) {
             return this._singletones[name]![tag];
